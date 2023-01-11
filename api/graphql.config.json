@@ -1,0 +1,5 @@
+{
+  "schema": "./src/services/graphql/schema/schema.graphql",
+  "documents": "./src/services/graphql/schema/**/*.graphql",
+  "exclude": "node_modules"
+}
