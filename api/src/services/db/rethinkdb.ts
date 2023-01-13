@@ -14,7 +14,7 @@ const connectRethinkDb = async function () {
 
   connection.on("close", (e: CloseEvent) => {
     logger.info("Connection closed");
-    console.info(e);
+    logger.info(e);
     rethinkDbConnection = null;
   });
 

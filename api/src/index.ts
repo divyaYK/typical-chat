@@ -3,6 +3,9 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import helmet from "helmet";
 import compression from "compression";
+import hpp from "hpp";
+import CookieSession from "cookie-session";
+import "express-async-errors";
 import services from "./services";
 import { logger } from "./helpers/logger";
 
@@ -14,7 +17,16 @@ class Server {
   constructor() {
     this.app = express();
     this.app.use(cors());
+    this.app.use(
+      CookieSession({
+        name: "session",
+        keys: ["session"],
+        maxAge: 60 * 60 * 2,
+        secure: false,
+      }),
+    );
     if (process.env.NODE_ENV === "production") {
+      this.app.use(hpp());
       this.app.use(helmet());
       this.app.use(
         helmet.contentSecurityPolicy({
