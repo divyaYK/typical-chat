@@ -1,0 +1,7 @@
+node_modules
+.git
+*docker-compose*
+*DOCKERFILE*
+.storybook
+**/*/node_modules
+.gitignore

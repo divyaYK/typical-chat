@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  typical-chat:
+    build: .
+    ports:
+      - "4560:5000"
+  rethinkdb:
+    image: "rethinkdb:latest"
+    ports:
+      - "8181:8080"
+      - "48015:28015"
+    volumes:
+      - ./data:/data
+  redis:
+    image: "redis:latest"
+    ports:
+    volumes:
+      -

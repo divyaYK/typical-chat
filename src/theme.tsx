@@ -9,18 +9,18 @@ export const enum ThemeEnum {
 export const THEME = DeepFreeze({
   COLORS: {
     EMERALD_GREEN: "#00A48A",
-    WHITE: "#FFFFFF",
+    WHITE: "#F2F2F2",
     LIGHT: {
-      BACKGROUND_01: "#FFFFFF",
-      BACKGROUND_02: "#EDF0F6",
-      BACKGROUND_03: "#9CA6AE",
+      BACKGROUND_01: "#F2F2F2",
+      BACKGROUND_02: "#B7BFB4",
+      BACKGROUND_03: "#74736E",
       TEXT: "#22283B",
     },
     DARK: {
-      BACKGROUND_01: "#000000",
-      BACKGROUND_02: "#1D1E24",
-      BACKGROUND_03: "#20232B",
-      TEXT: "#FFFFFF",
+      BACKGROUND_01: "#000D0C",
+      BACKGROUND_02: "#0d120e",
+      BACKGROUND_03: "#1b1e1b",
+      TEXT: "#F2F2F2",
     },
   },
   FONT: {

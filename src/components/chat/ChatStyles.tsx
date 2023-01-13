@@ -65,8 +65,10 @@ export const StyledChatDetails = styled.div`
   height: 100%;
   padding: 0.5rem 0;
   margin-left: 0.5rem;
+  justify-content: space-between;
 
   & p {
+    color: ${({ theme }) => theme.COLORS.LIGHT.BACKGROUND_03};
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -80,6 +82,8 @@ export const StyledChatRoom = styled.section`
   flex-direction: column;
   flex-grow: 1;
   margin-left: 1rem;
+  overflow: hidden;
+  border-radius: 1rem;
 `;
 
 export const StyledChatRoomHeader = styled.div`
@@ -88,7 +92,7 @@ export const StyledChatRoomHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.COLORS.DARK.BACKGROUND_01};
-  padding: 1rem;
+  padding: 1.5rem;
 `;
 
 export const StyledChatRoomBody = styled.div`
@@ -98,10 +102,42 @@ export const StyledChatRoomBody = styled.div`
   flex-grow: 1;
   width: 100%;
   background-color: ${({ theme }) => theme.COLORS.DARK.BACKGROUND_02};
+  padding: 1.5rem;
 
   & > div {
     background-color: ${({ theme }) => theme.COLORS.DARK.BACKGROUND_03};
     border-radius: 0.5rem;
     height: 70px;
   }
+`;
+
+export const StyledChatRoomDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 300px;
+`;
+
+export const StyledChatRoomDetailsHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 0.8rem;
+  border-bottom: 2px solid ${({ theme }) => theme.COLORS.DARK.BACKGROUND_01};
+
+  & svg {
+    color: white;
+    width: 1.5rem;
+    margin-right: 0.8rem;
+  }
+`;
+
+export const StyledChatRoomDetailsBody = styled.div`
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 1.5rem 1rem;
 `;

@@ -9,7 +9,8 @@ import { logger } from "./helpers/logger";
 dotenv.config();
 
 class Server {
-  public app: express.Application;
+  public app: Application;
+
   constructor() {
     this.app = express();
     this.app.use(cors());

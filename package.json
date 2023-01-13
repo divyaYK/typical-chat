@@ -13,11 +13,13 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "formik": "^2.2.9",
     "nanoid": "^4.0.0",
     "polished": "^4.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7.20.7",
