@@ -12,7 +12,7 @@ services:
     volumes:
       - ./data:/data
   redis:
-    image: "redis:latest"
+    image: redis
+    restart: on-failure
     ports:
-    volumes:
-      -
+      - 6379:6379
