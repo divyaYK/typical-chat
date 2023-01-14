@@ -6,15 +6,19 @@ import { THEME, ThemeEnum } from "./theme";
 import HomePage from "./pages/HomePage";
 
 const App = () => {
-  const { isDarkMode } = useDarkMode();
-  const mode = isDarkMode ? ThemeEnum.DARK : ThemeEnum.LIGHT;
+    const { isDarkMode, enable, disable } = useDarkMode();
+    const mode = isDarkMode ? ThemeEnum.DARK : ThemeEnum.LIGHT;
 
-  return (
-    <ThemeProvider theme={THEME}>
-      <GlobalStyle mode={mode} />
-      <HomePage />
+    return (
+        <ThemeProvider theme={THEME}>
+            <GlobalStyle mode={mode} />
+            <HomePage
+                isDarkMode={isDarkMode}
+                enable={enable}
+                disable={disable}
+            />
 
-      {/* <Button mode={mode} variant="primaryLight">
+            {/* <Button mode={mode} variant="primaryLight">
         hi
       </Button>
       <Input mode={mode} aria-label="Sample" placeholder="Hello" />
@@ -47,8 +51,8 @@ const App = () => {
         <AvatarStatus />
       </Avatar>
       <Icon icon="Question" color="white" height="40px" width="40px" /> */}
-    </ThemeProvider>
-  );
+        </ThemeProvider>
+    );
 };
 
 export default App;
