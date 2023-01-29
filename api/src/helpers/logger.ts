@@ -1,11 +1,16 @@
+import { config } from "config";
 import winston from "winston";
 
 class Logger {
+  public level: string;
+
   private transports: (
     | winston.transports.FileTransportInstance
     | winston.transports.ConsoleTransportInstance
   )[];
+
   constructor() {
+    this.level = "info";
     this.transports = [
       new winston.transports.File({
         filename: "error.log",
@@ -16,15 +21,21 @@ class Logger {
         level: "verbose",
       }),
     ];
-    if (process.env.NODE_ENV !== "production") {
+    if (config.NODE_ENV !== "production") {
       this.transports.push(new winston.transports.Console());
     }
   }
 
-  public loggerInstance() {
+  public loggerInstance(level?: string) {
     return winston.createLogger({
-      level: "info",
-      format: winston.format.json(),
+      level: level || this.level,
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+        winston.format.errors({ stack: true }),
+      ),
+      handleExceptions: true,
+      handleRejections: true,
       transports: this.transports,
     });
   }

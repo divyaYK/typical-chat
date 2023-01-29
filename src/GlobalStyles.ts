@@ -24,6 +24,11 @@ const GlobalStyle = createGlobalStyle<IThemeProps>`
     width: 100vw;
     overflow: hidden;
   }
+
+  #root {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 export default GlobalStyle;

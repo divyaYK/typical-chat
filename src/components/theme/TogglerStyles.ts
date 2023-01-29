@@ -49,6 +49,7 @@ export const StyledToggleInput = styled.input`
   & + ${StyledToggleLabel} .sun {
     visibility: visible;
     z-index: 1;
+    /* color: ${({ theme }) => theme.COLORS.LIGHT.BACKGROUND_01}; */
   }
 
   & + ${StyledToggleLabel} .moon {

@@ -1,18 +1,21 @@
 import styled from "styled-components";
+import { ThemeEnum } from "../../theme";
+import { IMode } from "../../utils/types";
 
-export const StyledSearchWrapper = styled.div`
+export const StyledSearchWrapper = styled.div<IMode>`
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 100%;
   height: 4rem;
   padding: 0.5rem;
-  background-color: ${(props) => props.theme.COLORS.DARK.BACKGROUND_02};
+  background-color: ${({ theme, mode }) => (mode === ThemeEnum.DARK
+    ? theme.COLORS.DARK.BACKGROUND_02
+    : theme.COLORS.LIGHT.BACKGROUND_02)};
   border: 2px solid transparent;
   border-radius: 0.8rem;
 
   & svg {
-    color: white;
     width: 1.5rem;
   }
 

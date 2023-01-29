@@ -1,4 +1,4 @@
-import { ThemeEnum } from "../../theme";
+import useMode from "../../hooks/useMode";
 import { Input } from "../input/Input";
 import { Text } from "../typography/Text";
 import {
@@ -7,21 +7,24 @@ import {
   StyledChatRoomHeader,
 } from "./ChatStyles";
 
-const ChatRoom = () => (
-  <StyledChatRoom>
-    <StyledChatRoomHeader>
-      <Text mode={ThemeEnum.DARK}>Room Name</Text>
-      <Text mode={ThemeEnum.DARK}>Details</Text>
-    </StyledChatRoomHeader>
-    <StyledChatRoomBody>
-      <Input
-        placeholder="Type a message..."
-        className="chat-room--input"
-        mode={ThemeEnum.DARK}
-        type="text"
-      />
-    </StyledChatRoomBody>
-  </StyledChatRoom>
-);
+const ChatRoom = () => {
+  const { mode } = useMode();
+
+  return (
+    <StyledChatRoom>
+      <StyledChatRoomHeader mode={mode}>
+        <Text>Room Name</Text>
+        <Text>Details</Text>
+      </StyledChatRoomHeader>
+      <StyledChatRoomBody mode={mode}>
+        <Input
+          placeholder="Type a message..."
+          className="chat-room--input"
+          type="text"
+        />
+      </StyledChatRoomBody>
+    </StyledChatRoom>
+  );
+};
 
 export default ChatRoom;

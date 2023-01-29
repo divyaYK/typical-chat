@@ -1,14 +1,11 @@
 import { ComponentPropsWithoutRef, forwardRef } from "react";
-import { IInputProps, StyledInput, StyledInputWrapper } from "./InputStyles";
+import { StyledInput } from "./InputStyles";
+import useMode from "../../hooks/useMode";
 
-export interface IInput
-  extends ComponentPropsWithoutRef<"input">,
-    IInputProps {}
-
-export const Input = forwardRef<HTMLInputElement, IInput>(
-  ({ mode, ...props }, ref) => (
-    <StyledInputWrapper mode={mode}>
-      <StyledInput ref={ref} {...props} />
-    </StyledInputWrapper>
-  ),
-);
+export const Input = forwardRef<
+  HTMLInputElement,
+  ComponentPropsWithoutRef<"input">
+>(({ ...props }, ref) => {
+  const { mode } = useMode();
+  return <StyledInput mode={mode} ref={ref} {...props} />;
+});

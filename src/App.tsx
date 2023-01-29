@@ -1,58 +1,37 @@
 import { ThemeProvider } from "styled-components";
+import { BrowserRouter } from "react-router-dom";
+import { ApolloProvider } from "@apollo/client";
+import { ErrorBoundary } from "react-error-boundary";
 import GlobalStyle from "./GlobalStyles";
 import "./App.css";
-import useDarkMode from "./hooks/useDarkMode";
-import { THEME, ThemeEnum } from "./theme";
-import HomePage from "./pages/HomePage";
+import { THEME } from "./theme";
+import useMode from "./hooks/useMode";
+import { ModeProvider } from "./context/ModeContext";
+import AllRoutes from "./routes";
+import client from "./graphql/client";
+import ErrorComponent from "./components/error/Error";
+
+const ErrorHandler = (error: Error, info: { componentStack: string }) => {
+  console.error(info);
+};
 
 const App = () => {
-    const { isDarkMode, enable, disable } = useDarkMode();
-    const mode = isDarkMode ? ThemeEnum.DARK : ThemeEnum.LIGHT;
+  const { mode } = useMode();
 
-    return (
-        <ThemeProvider theme={THEME}>
-            <GlobalStyle mode={mode} />
-            <HomePage
-                isDarkMode={isDarkMode}
-                enable={enable}
-                disable={disable}
-            />
-
-            {/* <Button mode={mode} variant="primaryLight">
-        hi
-      </Button>
-      <Input mode={mode} aria-label="Sample" placeholder="Hello" />
-      <Text mode={mode} as="h1" variant="h1">
-        Hello
-      </Text>
-      <Text mode={mode} as="h2" variant="h2">
-        Hello
-      </Text>
-      <Text mode={mode} as="h3" variant="h3">
-        Hello
-      </Text>
-      <Text mode={mode} as="h4" variant="h4">
-        Hello
-      </Text>
-      <Text mode={mode} as="h5" variant="h5">
-        Hello
-      </Text>
-      <Text mode={mode} as="h6" variant="h6">
-        Hello
-      </Text>
-      <Text mode={mode} variant="sub">
-        Hello
-      </Text>
-      <Text mode={mode} variant="code">
-        Hello
-      </Text>
-      <Avatar width="40px" height="40px" />
-      <Avatar width="40px" height="40px">
-        <AvatarStatus />
-      </Avatar>
-      <Icon icon="Question" color="white" height="40px" width="40px" /> */}
-        </ThemeProvider>
-    );
+  return (
+    <ErrorBoundary FallbackComponent={ErrorComponent} onError={ErrorHandler}>
+      <ApolloProvider client={client}>
+        <BrowserRouter>
+          <ThemeProvider theme={THEME}>
+            <ModeProvider>
+              <GlobalStyle mode={mode} />
+              <AllRoutes />
+            </ModeProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </ApolloProvider>
+    </ErrorBoundary>
+  );
 };
 
 export default App;

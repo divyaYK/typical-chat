@@ -22,6 +22,7 @@ export const StyledAvatar = styled.img`
   width: 100%;
   height: auto;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 export const StyledAvatarStatus = styled.div`

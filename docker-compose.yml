@@ -4,23 +4,26 @@ services:
     build: .
     ports:
       - "5173:5173"
-  rethinkdb:
-    image: "rethinkdb:latest"
+  mongo:
+    image: mongo
+    container_name: monogodb
     ports:
-      - "8181:8080"
-      - "48015:28015"
+      - "6939:27017"
     volumes:
-      - data:/data
+      - mongodb:/data/db
+    env_file: api/.env
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
   redis:
-    image: redis
+    image: "redis/redis-stack"
     restart: on-failure
     ports:
-      - 6379:6379
+      - "6379:6379"
     volumes:
       - cache:/data
 
 volumes:
-  data:
+  mongodb:
     driver: local
   cache:
     driver: local

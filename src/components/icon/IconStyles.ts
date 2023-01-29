@@ -1,15 +1,17 @@
 import styled from "styled-components";
-import { getStyleBasedOnType } from "../../utils/StyleHelpers";
+import { getColorForIcon, getStyleBasedOnType } from "../../utils/StyleHelpers";
+import { IMode } from "../../utils/types";
 
 export interface IIconProps {
   width?: number | string;
   height?: number | string;
   color?: string;
+  inherit?: boolean;
 }
 
-export const StyledIcon = styled.div<IIconProps>`
+export const StyledIcon = styled.div<IIconProps & IMode>`
   display: flex;
-  color: ${(props) => (props.color ? props.color : "inherit")};
+  color: ${(props) => getColorForIcon(props)};
 
   & svg {
     display: inline-block;

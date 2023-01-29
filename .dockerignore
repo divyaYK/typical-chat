@@ -5,3 +5,7 @@ node_modules
 .storybook
 **/*/node_modules
 .gitignore
+**/*/*.stories.*
+.vscode
+npm-debug
+*.log

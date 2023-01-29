@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { THEME, ThemeEnum } from "../../theme";
+import { IMode } from "../../utils/types";
 
 export interface ITextProps {
   fontFamily?: string;
@@ -7,10 +8,9 @@ export interface ITextProps {
   fontWeight?: string;
   color?: string;
   variant?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "code" | "sub";
-  mode: ThemeEnum;
 }
 
-const getTypeStyles = (p: ITextProps & { theme: typeof THEME }) => {
+const getTypeStyles = (p: ITextProps & IMode & { theme: typeof THEME }) => {
   switch (p.variant) {
     case "h1":
       return {
@@ -105,7 +105,7 @@ const getTypeStyles = (p: ITextProps & { theme: typeof THEME }) => {
   }
 };
 
-export const StyledText = styled.p<ITextProps>`
+export const StyledText = styled.p<ITextProps & IMode>`
   font-family: ${(props) => props.fontFamily || getTypeStyles(props).fontFamily};
   font-size: ${(props) => props.fontSize || getTypeStyles(props).fontSize};
   font-weight: ${(props) => props.fontWeight || getTypeStyles(props).fontWeight};
