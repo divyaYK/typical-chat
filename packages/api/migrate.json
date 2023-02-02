@@ -1,0 +1,4 @@
+{
+  "dbConnectionUri": "mongodb://localhost:6939/typical-chat",
+  "migrationsDir": "src/migrations"
+}

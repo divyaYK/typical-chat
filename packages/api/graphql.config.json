@@ -1,0 +1,5 @@
+{
+  "schema": ["**/*/schema/*"],
+  "documents": ["**/*.{graphql,js,ts,jsx,tsx}"],
+  "exclude": "node_modules"
+}
