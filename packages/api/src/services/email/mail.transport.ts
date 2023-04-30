@@ -2,10 +2,10 @@
 import sendGridMail from "@sendgrid/mail";
 import nodemailer from "nodemailer";
 import Mail from "nodemailer/lib/mailer";
-
+import { GraphQLError } from "graphql";
 import { config } from "config";
-import { logger } from "helpers/logger";
-import { BadRequestError } from "helpers/errorHandler";
+import { logger } from "shared/helpers/logger";
+import httpStatus from "http-status";
 
 interface IMailOptions {
   from: string;
@@ -62,7 +62,11 @@ class MailTransport {
       this.logger.info("Dev Env: Mail sent successfully");
     } catch (err) {
       this.logger.error(err);
-      throw new BadRequestError(err);
+      throw new GraphQLError("Error sending mail", {
+        extensions: {
+          code: httpStatus.BAD_REQUEST,
+        },
+      });
     }
   }
 
@@ -83,7 +87,11 @@ class MailTransport {
       this.logger.info("Prod Env: Mail sent successfully");
     } catch (err) {
       this.logger.error(err);
-      throw new BadRequestError(err);
+      throw new GraphQLError("Error sending mail", {
+        extensions: {
+          code: httpStatus.BAD_REQUEST,
+        },
+      });
     }
   }
 }

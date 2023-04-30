@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
 import { faker } from "@faker-js/faker";
 import { SpaceVisibility } from "interfaces/space.interface";
 import spaceModel from "models/space";
@@ -10,7 +8,6 @@ async function up() {
   const allSpaces = [];
   try {
     const users = await userModel.find();
-    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < 100; i++) {
       const randomNumber = Math.floor(Math.random() * users.length);
       allSpaces.push({

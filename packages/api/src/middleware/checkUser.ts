@@ -1,11 +1,10 @@
-/* eslint-disable camelcase */
-import { ForbiddenError } from "apollo-server-core";
+import { GraphQLError } from "graphql";
 import { Request } from "express";
-import { InternalServerError } from "helpers/errorHandler";
-import { verifyJwt } from "helpers/jwt";
-import { logger } from "helpers/logger";
+import { verifyJwt } from "shared/helpers/jwt";
+import { logger } from "shared/helpers/logger";
 import { IUserDocument } from "interfaces/user.interface";
 import userModel from "models/user";
+import httpStatus from "http-status";
 
 const CheckUser = async (req: Request): Promise<IUserDocument | boolean> => {
   try {
@@ -31,13 +30,21 @@ const CheckUser = async (req: Request): Promise<IUserDocument | boolean> => {
       .select("+verified -password");
 
     if (!user || !user.verified) {
-      throw new ForbiddenError("User does not exist");
+      throw new GraphQLError("User does not exist", {
+        extensions: {
+          code: httpStatus.NOT_FOUND,
+        },
+      });
     }
 
     return user;
   } catch (error: any) {
     logger.error(error);
-    throw new InternalServerError(error);
+    throw new GraphQLError("Error occurred", {
+      extensions: {
+        code: httpStatus.INTERNAL_SERVER_ERROR,
+      },
+    });
   }
 };
 

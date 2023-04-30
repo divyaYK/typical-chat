@@ -1,12 +1,12 @@
 import { SpaceVisibility } from "interfaces/space.interface";
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const SpaceSchema = new Schema(
   {
     adminId: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: true,
-      index: true,
+      ref: "User",
     },
     spaceName: {
       type: String,

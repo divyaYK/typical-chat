@@ -1,6 +1,7 @@
-import { InternalServerError } from "helpers/errorHandler";
-import { IUser } from "interfaces/user.interface";
+import { TUser } from "interfaces/user.interface";
 import { BaseCache } from "./base.cache";
+import { GraphQLError } from "graphql/error";
+import httpStatus from "http-status";
 
 export class UserCache extends BaseCache {
   constructor() {
@@ -9,11 +10,9 @@ export class UserCache extends BaseCache {
 
   public async saveUserToCache(
     key: string,
-    userData: Omit<IUser, "password">,
+    userData: Omit<TUser, "password"> & { _id: string },
   ): Promise<void> {
-    const {
-      _id, firstName, lastName, email, uId,
-    } = userData;
+    const { _id, firstName, lastName, email, uId } = userData;
 
     const redisList: string[] = [
       "_id",
@@ -35,7 +34,11 @@ export class UserCache extends BaseCache {
       await this.client.HSET(`users:${key}`, redisList);
     } catch (err: any) {
       this.log.error(JSON.stringify(err));
-      throw new InternalServerError(err);
+      throw new GraphQLError("Error occurred during caching user", {
+        extensions: {
+          code: httpStatus.INTERNAL_SERVER_ERROR,
+        },
+      });
     }
   }
 }

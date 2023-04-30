@@ -1,5 +1,5 @@
 import { config } from "config";
-import { logger } from "helpers/logger";
+import { logger } from "shared/helpers/logger";
 import { createClient } from "redis";
 import { Logger } from "winston";
 

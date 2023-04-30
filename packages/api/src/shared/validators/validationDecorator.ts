@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
-import { BadRequestError } from "helpers/errorHandler";
-import { logger } from "helpers/logger";
+import { GraphQLError } from "graphql";
+import httpStatus from "http-status";
+import { logger } from "shared/helpers/logger";
 
 type TDecorator = (
   target: unknown,
@@ -62,9 +61,11 @@ export function ValidationDecorator(schema: IValidationSchema): TDecorator {
       const errors = getErrors(schema, valuesToCheck);
       if (errors) {
         logger.error(JSON.stringify(errors));
-        throw new BadRequestError(
-          `Validation error: ${JSON.stringify(errors)}`,
-        );
+        throw new GraphQLError("Validation Failed", {
+          extensions: {
+            code: httpStatus.BAD_REQUEST,
+          },
+        });
       }
       return method.apply(this, args);
     };

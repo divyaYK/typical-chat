@@ -1,13 +1,15 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const ChannelMemberSchema = new Schema({
   userId: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
+    ref: "User",
   },
   channelId: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
+    ref: "Channel",
   },
 });
 

@@ -1,4 +1,4 @@
-import { logger } from "helpers/logger";
+import { logger } from "shared/helpers/logger";
 import { IGraphqlContext } from "interfaces/context.interface";
 
 export const user = async (

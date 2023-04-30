@@ -1,16 +1,16 @@
-/* eslint-disable no-underscore-dangle */
+import { GraphQLError } from "graphql";
 import { config } from "config";
 import {
-  BadRequestError,
-  Forbidden,
-  InternalServerError,
-} from "helpers/errorHandler";
-import { accessTokenCookieOptions, signJwt, verifyJwt } from "helpers/jwt";
-import { logger } from "helpers/logger";
+  accessTokenCookieOptions,
+  signJwt,
+  verifyJwt,
+} from "shared/helpers/jwt";
+import { logger } from "shared/helpers/logger";
 import httpStatus from "http-status";
 import { IGraphqlContext } from "interfaces/context.interface";
 import userModel from "models/user";
 import { redisConnection } from "services/db/redis";
+import { mongoUserService } from "services/db/mongodb/user.service";
 
 export const refreshAccessToken = async (
   _: unknown,
@@ -18,24 +18,28 @@ export const refreshAccessToken = async (
   context: IGraphqlContext,
 ) => {
   try {
-    // eslint-disable-next-line camelcase
     const { refresh_token } = context.req.cookies;
 
     const decoded = verifyJwt(refresh_token, "JWT_REFRESH_PUBLIC_KEY");
     if (!decoded) {
-      throw new Forbidden("Session expired. Login again.");
+      throw new GraphQLError("Session expired, login again.", {
+        extensions: {
+          code: httpStatus.BAD_REQUEST,
+        },
+      });
     }
 
     // get session from redis
     const session = await redisConnection.client.get((decoded as any).user);
 
-    const user = await userModel
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .findById(JSON.parse(session!)._id)
-      .select("+verified");
+    const user = await mongoUserService.getUser(session!);
 
     if (!user || !user.verified) {
-      throw new BadRequestError("User not verified.");
+      throw new GraphQLError("User not verified", {
+        extensions: {
+          code: httpStatus.BAD_REQUEST,
+        },
+      });
     }
 
     const accessToken = signJwt(
@@ -58,6 +62,10 @@ export const refreshAccessToken = async (
     };
   } catch (err: any) {
     logger.error(err);
-    throw new InternalServerError(err);
+    throw new GraphQLError("Error occurred", {
+      extensions: {
+        code: httpStatus.INTERNAL_SERVER_ERROR,
+      },
+    });
   }
 };

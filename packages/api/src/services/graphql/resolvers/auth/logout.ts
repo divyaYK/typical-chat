@@ -1,9 +1,9 @@
-/* eslint-disable no-underscore-dangle */
-import { InternalServerError } from "helpers/errorHandler";
-import { logger } from "helpers/logger";
+import { GraphQLError } from "graphql";
+import { logger } from "shared/helpers/logger";
 import { IGraphqlContext } from "interfaces/context.interface";
 import checkIsLoggedIn from "middleware/checkAuthentication";
 import { redisConnection } from "services/db/redis";
+import httpStatus from "http-status";
 
 export const logout = async (
   _: unknown,
@@ -28,6 +28,10 @@ export const logout = async (
     return true;
   } catch (error) {
     logger.error(error);
-    throw new InternalServerError(error);
+    throw new GraphQLError("User not found", {
+      extensions: {
+        code: httpStatus.NOT_FOUND,
+      },
+    });
   }
 };

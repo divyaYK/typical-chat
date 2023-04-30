@@ -1,5 +1,5 @@
 import { config } from "config";
-import { logger } from "helpers/logger";
+import { logger } from "shared/helpers/logger";
 import mongoose from "mongoose";
 import { redisConnection } from "./redis";
 

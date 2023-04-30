@@ -1,36 +1,40 @@
-/* eslint-disable class-methods-use-this */
-import { GenericReturnMessage, LoginMessage } from "helpers/constants";
-import { NotFoundError, UnAuthorizedError } from "helpers/errorHandler";
+import { GenericReturnMessage, LoginMessage } from "shared/helpers/constants";
 import {
   SignTokens,
   accessTokenCookieOptions,
   refreshTokenCookieOptions,
-} from "helpers/jwt";
-import { logger } from "helpers/logger";
-import { LoginValidators } from "helpers/validators/login";
-import { ValidationDecorator } from "helpers/validators/validationDecorator";
+} from "shared/helpers/jwt";
+import { logger } from "shared/helpers/logger";
+import { LoginValidators } from "shared/validators/login";
+import { ValidationDecorator } from "shared/validators/validationDecorator";
 import httpStatus from "http-status";
 import { ILoginInput } from "interfaces/auth.interface";
 import { IGraphqlContext } from "interfaces/context.interface";
-import { IUser, IUserDocument } from "interfaces/user.interface";
-import userModel, { IUserDocumentMethods } from "models/user";
+import {
+  IUser,
+  IUserDocument,
+  IUserDocumentMethods,
+} from "interfaces/user.interface";
 import { HydratedDocument } from "mongoose";
+import { GraphQLError } from "graphql";
+import { mongoUserService } from "services/db/mongodb/user.service";
 
 class LoginClass {
   @ValidationDecorator(LoginValidators)
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   private validateParams(_: ILoginInput) {
     return true;
   }
 
   private async findUser(input: ILoginInput) {
-    const user: HydratedDocument<IUserDocumentMethods, IUserDocument> | null = await userModel
-      .findOne({ email: input.email })
-      .select("+password +verified");
+    const user = await mongoUserService.getUserByEmail(input.email);
 
     if (!user) {
       logger.error("User not found in the database");
-      throw new NotFoundError("User does not exist");
+      throw new GraphQLError("User not found", {
+        extensions: {
+          code: httpStatus.NOT_FOUND,
+        },
+      });
     } else if (!user.verified) {
       return false;
     } else {
@@ -48,12 +52,16 @@ class LoginClass {
     );
     if (!verifyPassword) {
       logger.error("Invalid password");
-      throw new UnAuthorizedError("Invalid password");
+      throw new GraphQLError("Invalid Credentials", {
+        extensions: {
+          code: httpStatus.BAD_REQUEST,
+        },
+      });
     }
     return true;
   }
 
-  private async getTokens(user: IUser) {
+  private async getTokens(user: IUser & { _id: string }) {
     const { accessToken, refreshToken } = await SignTokens(user);
     return { accessToken, refreshToken };
   }
@@ -82,19 +90,9 @@ class LoginClass {
     user.password = "";
 
     // issue tokens
-    const userResult = {
-      // eslint-disable-next-line no-underscore-dangle
-      _id: user._id,
-      email: user.email,
-      password: user.password,
-      uId: user.uId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      verified: user.verified,
-    };
-    const { accessToken, refreshToken } = await LoginClass.prototype.getTokens(
-      userResult,
-    );
+    const { accessToken, refreshToken } = await LoginClass.prototype.getTokens({
+      ...user,
+    });
     context.res.cookie(
       "refresh_token",
       refreshToken,

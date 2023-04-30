@@ -1,25 +1,19 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-/* eslint-disable class-methods-use-this */
-import { VerifyEmailValidators } from "helpers/validators/verifyEmail";
-import { ValidationDecorator } from "helpers/validators/validationDecorator";
+import { VerifyEmailValidators } from "shared/validators/verifyEmail";
+import { ValidationDecorator } from "shared/validators/validationDecorator";
 import { IVerifyEmailInput } from "interfaces/auth.interface";
 import { HydratedDocument, Types } from "mongoose";
-import userModel, { IUserDocumentMethods } from "models/user";
-import { IUserDocument } from "interfaces/user.interface";
+import userModel from "models/user";
+import { IUserDocument, IUserDocumentMethods } from "interfaces/user.interface";
 import tokenModel from "models/tokens";
-import { logger } from "helpers/logger";
+import { logger } from "shared/helpers/logger";
 
 class VerifyEmailClass {
   @ValidationDecorator(VerifyEmailValidators)
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   private validateParams(_: IVerifyEmailInput) {
     return true;
   }
 
   private async findUser(input: IVerifyEmailInput) {
-    // eslint-disable-next-line operator-linebreak
     const user: HydratedDocument<IUserDocumentMethods, IUserDocument> | null =
       await userModel.findOne({ email: input.email });
 

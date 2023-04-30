@@ -1,17 +1,11 @@
-/* eslint-disable no-unused-vars */
-import mongoose, { Model } from "mongoose";
+import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
-import { IUserDocument } from "interfaces/user.interface";
-
-export interface IUserDocumentMethods {
-  comparePasswords(
-    passwordToCheck: string,
-    userPassword: string,
-  ): Promise<boolean>;
-}
-
-type TUserModel = Model<IUserDocument, object, IUserDocumentMethods>;
+import {
+  IUserDocument,
+  IUserDocumentMethods,
+  TUserModel,
+} from "interfaces/user.interface";
 
 const UserSchema = new mongoose.Schema<
   IUserDocument,
@@ -52,7 +46,7 @@ const UserSchema = new mongoose.Schema<
       type: String,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 UserSchema.index({ email: 1 });
@@ -68,7 +62,7 @@ UserSchema.method(
   async (passwordToCheck: string, userPassword: string) => {
     const result = await bcrypt.compare(passwordToCheck, userPassword);
     return result;
-  },
+  }
 );
 
 const userModel = mongoose.model("User", UserSchema);

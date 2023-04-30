@@ -1,11 +1,9 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import { IUser } from "interfaces/user.interface";
 import { redisConnection } from "services/db/redis";
-import { config } from "../config";
-import { Forbidden } from "./errorHandler";
+import { config } from "config";
+import httpStatus from "http-status";
 
 const cookieOptions = Object.freeze({
   httpOnly: false,
@@ -51,12 +49,16 @@ export const verifyJwt = (token: string, Key: string) => {
     const decoded = jwt.verify(token, publicKey);
     return decoded;
   } catch (error: any) {
-    throw new Forbidden(error);
+    throw new GraphQLError("jwt verification failed", {
+      extensions: {
+        code: httpStatus.UNAUTHORIZED,
+      },
+    });
   }
 };
 
 export async function SignTokens(
-  user: IUser,
+  user: IUser & { _id: string },
 ): Promise<{ accessToken: string; refreshToken: string }> {
   // create a session in redis
   // TODO: change the fetching method

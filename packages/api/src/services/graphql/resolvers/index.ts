@@ -4,8 +4,8 @@ import { user } from "./user";
 import { logout } from "./auth/logout";
 import { refreshAccessToken } from "./auth/refreshAccessToken";
 import { loginResolver } from "./auth/login";
-import { ResendVerificationMail, SignUpResolver } from "./auth/signup";
 import { verifyEmailResolver } from "./auth/verifyEmail";
+import { signUpClass } from "./auth/signup";
 
 const resolvers: IResolvers = {
   DateTime: GraphQLDateTime,
@@ -17,8 +17,8 @@ const resolvers: IResolvers = {
   },
   Mutation: {
     login: loginResolver,
-    signup: SignUpResolver,
-    resendVerificationMail: ResendVerificationMail,
+    signup: signUpClass.signUpResolver,
+    resendVerificationMail: signUpClass.resendVerificationMail,
   },
 };
 

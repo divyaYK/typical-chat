@@ -1,16 +1,15 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const ChannelThreadSchema = new Schema({
-  channelId: {
-    type: Types.ObjectId,
-    required: true,
+const ChannelThreadSchema = new Schema(
+  {
+    channelId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Channel",
+    },
   },
-  createdAt: {
-    type: Date,
-    required: true,
-    default: Date.now(),
-  },
-});
+  { timestamps: true },
+);
 
 const ChannelThreadModel = mongoose.model("ChannelThread", ChannelThreadSchema);
 export default ChannelThreadModel;

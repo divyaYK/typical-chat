@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { logger } from "helpers/logger";
+import { logger } from "shared/helpers/logger";
 import { BaseCache } from "services/redis/base.cache";
 import { Logger } from "winston";
 

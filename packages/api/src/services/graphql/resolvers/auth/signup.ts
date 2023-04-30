@@ -1,29 +1,23 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable class-methods-use-this */
-import { BadRequestError, InternalServerError } from "helpers/errorHandler";
-import { logger } from "helpers/logger";
+import { logger } from "shared/helpers/logger";
 import { ISignUpInput } from "interfaces/auth.interface";
-import { IUser, IUserDocument } from "interfaces/user.interface";
+import { TUser } from "interfaces/user.interface";
 import userModel from "models/user";
-import mongoose, { HydratedDocument } from "mongoose";
-import { checkIfUserExists } from "services/db/utils";
-import { ValidationDecorator } from "helpers/validators/validationDecorator";
-import { SignUpValidators } from "helpers/validators/signup";
-import { UserCache } from "services/redis/user.cache";
-import { generateRandomIntegers } from "helpers/generateRandomIntegers";
-import crypto from "crypto";
+import mongoose from "mongoose";
+import { ValidationDecorator } from "shared/validators/validationDecorator";
+import { SignUpValidators } from "shared/validators/signup";
+import { generateRandomIntegers } from "shared/helpers/generateRandomIntegers";
 import { verifyEmailTemplate } from "services/email/templates/verifyEmail/handlers";
 import { mailTransport } from "services/email/mail.transport";
-import tokenModel from "models/tokens";
-
-const userCache = new UserCache();
+import { mongoAuthService } from "services/db/mongodb/auth.service";
+import { GraphQLError } from "graphql";
+import httpStatus from "http-status";
+import { redisAuthService } from "services/db/redis/auth.service";
 
 /**
  * @class SignUp
  * @summary Resolver that handles the sign up process for users.
  * @description
  * - Checks if user already exists and throws an error.
- * - Uploads user's avatar image to the cloudinary server.
  * - Saves user's data to redis cache and mongodb.
  */
 class SignUpClass {
@@ -32,7 +26,6 @@ class SignUpClass {
    * @throws BadRequestError if validation fails.
    */
   @ValidationDecorator(SignUpValidators)
-  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   private async validateParams(input: ISignUpInput) {
     return true;
   }
@@ -43,10 +36,14 @@ class SignUpClass {
    */
 
   private async checkIfUserExists(email: string) {
-    const userExists = await checkIfUserExists(email);
+    const userExists = await mongoAuthService.checkIfUserExists(email);
     if (userExists) {
       logger.error("User already exists");
-      throw new BadRequestError("User already exists");
+      throw new GraphQLError("User already exists", {
+        extensions: {
+          code: httpStatus.BAD_REQUEST,
+        },
+      });
     }
   }
 
@@ -73,40 +70,21 @@ class SignUpClass {
   /**
    * Saves user to redis cache and mongodb database.
    */
-  private async saveToCacheAndDb(userDataForCache: IUser) {
-    const { password, ...properties } = userDataForCache;
+  private async saveToCacheAndDb(userDataForCache: TUser) {
     // save user to cache
-    await userCache.saveUserToCache(`${userDataForCache._id}`, properties);
+    await redisAuthService.createUser(userDataForCache);
 
     // create new user in db
-    const user: HydratedDocument<IUserDocument> = await userModel.create({
-      ...userDataForCache,
-      password,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-    const { password: userPassword, ...userDetails } = user;
+    const userDetails = await mongoAuthService.createUser(userDataForCache);
     return userDetails;
   }
 
   private async sendConfirmationEmail(email: string, userId: string) {
-    let verificationToken = "";
-    const tokenExists = await tokenModel.findOne({ userId });
-    if (!tokenExists) {
-      verificationToken = crypto.randomBytes(64).toString("hex");
-      await tokenModel.create({
-        token: verificationToken,
-        userId,
-        createdAt: new Date(),
-      });
-    } else {
-      verificationToken = tokenExists.token;
-    }
-    const emailBody = await verifyEmailTemplate(
-      `http://localhost:5174/email-verify?email=${email}&tk=${verificationToken}`,
-    );
     try {
+      const verificationToken = await mongoAuthService.getToken(userId);
+      const emailBody = await verifyEmailTemplate(
+        `http://localhost:5174/email-verify?email=${email}&tk=${verificationToken}`,
+      );
       const emailResult = await mailTransport.sendEmail(
         email,
         "verify your email",
@@ -115,7 +93,14 @@ class SignUpClass {
       logger.info(JSON.stringify(emailResult));
     } catch (err) {
       logger.error(err);
-      throw new InternalServerError(err);
+      throw new GraphQLError(
+        "Error occurred while sending confirmation email",
+        {
+          extensions: {
+            code: httpStatus.INTERNAL_SERVER_ERROR,
+          },
+        },
+      );
     }
   }
 
@@ -131,7 +116,6 @@ class SignUpClass {
   public async signUpResolver(
     _: unknown,
     { input }: { input: ISignUpInput },
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     __: unknown,
   ) {
     // validate first
@@ -149,8 +133,8 @@ class SignUpClass {
 
     // save user to cache and database
     const uId = `${generateRandomIntegers(12)}`;
-    const userDataForCache: IUser = {
-      _id: userId,
+    const userDataForCache: TUser = {
+      _id: `${userId}`,
       firstName: input.firstName,
       lastName: input.lastName,
       email: input.email,
@@ -175,7 +159,6 @@ class SignUpClass {
   public async resendVerificationMail(
     _: unknown,
     { input }: { input: { email: string } },
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     __: unknown,
   ) {
     const user = await userModel.findOne({ email: input.email });
@@ -202,5 +185,4 @@ class SignUpClass {
   }
 }
 
-export const SignUpResolver = new SignUpClass().signUpResolver;
-export const ResendVerificationMail = new SignUpClass().resendVerificationMail;
+export const signUpClass: SignUpClass = new SignUpClass();

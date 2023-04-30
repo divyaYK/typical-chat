@@ -2,16 +2,19 @@ import mongoose, { Schema, Types } from "mongoose";
 
 const OneOnOneSchema = new Schema({
   senderId: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
+    ref: "User",
   },
   spaceId: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
+    ref: "Space",
   },
   recipientId: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
+    ref: "User",
   },
 });
 

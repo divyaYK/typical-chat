@@ -1,10 +1,9 @@
-import { generateRandomIntegers } from "helpers/generateRandomIntegers";
+import { generateRandomIntegers } from "shared/helpers/generateRandomIntegers";
 import userModel from "models/user";
 import { faker } from "@faker-js/faker";
 
 async function up() {
   const allUsers = [];
-  // eslint-disable-next-line no-plusplus
   for (let i = 0; i < 1772; i++) {
     allUsers.push({
       avatar: faker.image.avatar(),

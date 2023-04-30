@@ -1,11 +1,13 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 const TokenSchema = new mongoose.Schema(
   {
     userId: {
-      type: Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       unique: true,
       required: true,
+      index: true,
+      ref: "User",
     },
     token: {
       type: String,
@@ -14,8 +16,6 @@ const TokenSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-
-TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 });
 
 const tokenModel = mongoose.model("Token", TokenSchema);
 export default tokenModel;

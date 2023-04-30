@@ -1,8 +1,8 @@
-/* eslint-disable consistent-return */
+import { GraphQLError } from "graphql";
 import { Request } from "express";
-import { UnAuthorizedError } from "helpers/errorHandler";
-import { logger } from "helpers/logger";
+import { logger } from "shared/helpers/logger";
 import { IUserDocument } from "interfaces/user.interface";
+import httpStatus from "http-status";
 
 const checkIsLoggedIn = async (
   req: Request,
@@ -13,7 +13,11 @@ const checkIsLoggedIn = async (
     const authUser = await CheckUser(req);
 
     if (!authUser) {
-      return new UnAuthorizedError("You are not logged in");
+      throw new GraphQLError("Unauthorized", {
+        extensions: {
+          code: httpStatus.UNAUTHORIZED,
+        },
+      });
     }
   } catch (error) {
     logger.error(error);
