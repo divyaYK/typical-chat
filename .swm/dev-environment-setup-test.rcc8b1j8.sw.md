@@ -1,8 +1,8 @@
 ---
 id: rcc8b1j8
-title: Dev environment setup
+title: Dev environment setup Test
 file_version: 1.1.3
-app_version: 1.13.10
+app_version: 1.13.13
 ---
 
 To run your local dev environment you will need a few things on your machine. Follow the steps below.
@@ -105,10 +105,6 @@ $ yarn pack
 ```
 
 See package.json for full list of supported yarn scripts:
-
-<br/>
-
-
 
 <br/>
 
